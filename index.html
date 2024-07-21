@@ -1,24 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>News For All</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-container input,
+        .search-container select {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+        .search-container button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .news-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .news-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 18rem;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .news-card h5 {
+            font-size: 1.25em;
+            margin: 15px 15px 5px 15px;
+        }
+        .news-card p {
+            margin: 0 15px 15px 15px;
+            flex-grow: 1;
+            height: 100px; /* Adjust this value as needed */
+            overflow: hidden;
+        }
+        .news-card hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 0 15px;
+        }
+        .news-card .card-body {
+            padding: 10px 15px;
+        }
+        .news-card .list-group-item {
+            border: none;
+            padding: 5px 15px;
+        }
+        .news-card .card-link {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .news-card .card-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1 class="title">Top News</h1>
-    <div class="input-container">
-        <input type="text" placeholder="Type something..." class="text-input">
-    </div>
-    <div class="dropdown-container">
-        <select id="country-dropdown" class="dropdown">
+    <h1 style="color: #333; font-size: 2.5em; margin-bottom: 20px;">Top News</h1>
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Type something..." />
+        <select id="country-dropdown">
             <option value="">Select a country</option>
+            <!-- Countries will be dynamically added here -->
         </select>
+        <select id="category-dropdown">
+            <option value="">Select a category</option>
+            <option value="business">Business</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="general">General</option>
+            <option value="health">Health</option>
+            <option value="science">Science</option>
+            <option value="sports">Sports</option>
+            <option value="technology">Technology</option>
+        </select>
+        <button id="search-button">Search</button>
     </div>
-    <div class="button-container">
-        <button type="submit" class="primary">Submit</button>
-    </div>
-    <script src="scripts.js"></script>
+    <div class="news-container" id="news-container"></div>
+    <script src="scitpts.js"></script>
 </body>
 </html>
