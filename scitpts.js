@@ -1,47 +1,110 @@
 const countries = [
-    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria",
-    "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia",
-    "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia",
-    "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo, Democratic Republic of the",
-    "Congo, Republic of the", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica",
-    "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
-    "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea",
-    "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel",
-    "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kosovo", "Kuwait",
-    "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
-    "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico",
-    "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal",
-    "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau",
-    "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania",
-    "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino",
-    "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia",
-    "Solomon Islands", "Somalia", "South Africa", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland",
-    "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia",
-    "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay",
-    "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+    "Argentina", "Australia", "Austria", "Belgium", "Brazil", "Bulgaria", "Canada", "China", "Colombia", "Cuba", "Czech Republic",
+    "Egypt", "France", "Germany", "Greece", "Hong Kong", "Hungary", "India", "Indonesia", "Ireland", "Israel", "Italy", "Japan",
+    "Latvia", "Lithuania", "Malaysia", "Mexico", "Morocco", "Netherlands", "New Zealand", "Nigeria", "Norway", "Philippines",
+    "Poland", "Portugal", "Romania", "Russia", "Saudi Arabia", "Serbia", "Singapore", "Slovakia", "Slovenia", "South Africa",
+    "South Korea", "Sweden", "Switzerland", "Taiwan", "Thailand", "Turkey", "UAE", "Ukraine", "United Kingdom", "United States", "Venezuela"
 ];
 
 window.onload = function() {
-    const dropdown = document.getElementById('country-dropdown');
-
+    const countryDropdown = document.getElementById('country-dropdown');
     countries.forEach(country => {
         let option = document.createElement('option');
         option.value = country;
         option.text = country;
-        dropdown.add(option);
+        countryDropdown.add(option);
     });
 
-    // Initialize the search functionality
-    dropdown.addEventListener('input', function() {
-        let filter = dropdown.value.toUpperCase();
-        let options = dropdown.getElementsByTagName('option');
-        for (let i = 0; i < options.length; i++) {
-            let txtValue = options[i].textContent || options[i].innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                options[i].style.display = "";
-            } else {
-                options[i].style.display = "none";
-            }
+    const searchInput = document.getElementById('search-input');
+    const categoryDropdown = document.getElementById('category-dropdown');
+    const searchButton = document.getElementById('search-button');
+
+    searchInput.addEventListener('input', function() {
+        if (searchInput.value) {
+            countryDropdown.disabled = true;
+            categoryDropdown.disabled = true;
+        } else {
+            countryDropdown.disabled = false;
+            categoryDropdown.disabled = false;
         }
     });
+
+    countryDropdown.addEventListener('change', function() {
+        if (countryDropdown.value || categoryDropdown.value) {
+            searchInput.disabled = true;
+        } else {
+            searchInput.disabled = false;
+        }
+    });
+
+    categoryDropdown.addEventListener('change', function() {
+        if (categoryDropdown.value || countryDropdown.value) {
+            searchInput.disabled = true;
+        } else {
+            searchInput.disabled = false;
+        }
+    });
+
+    searchButton.addEventListener('click', function() {
+        const searchTerm = searchInput.value.trim();
+        const selectedCountry = countryDropdown.value;
+        const selectedCategory = categoryDropdown.value;
+        let url = `https://newsapi.org/v2/top-headlines?apiKey=a7f36bf0e6074d1099a8c1d0ee88dbad`;
+
+        if (searchTerm) {
+            url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(searchTerm)}&apiKey=a7f36bf0e6074d1099a8c1d0ee88dbad`;
+        } else {
+            if (selectedCountry) {
+                const countryCode = getCountryCode(selectedCountry);
+                url += `&country=${countryCode}`;
+            }
+            if (selectedCategory) {
+                url += `&category=${selectedCategory}`;
+            }
+        }
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => displayNews(data.articles))
+            .catch(error => console.error('Error fetching news:', error));
+    });
 };
+
+function getCountryCode(countryName) {
+    const countryCodes = {
+        "Argentina": "ar", "Australia": "au", "Austria": "at", "Belgium": "be", "Brazil": "br", "Bulgaria": "bg", "Canada": "ca",
+        "China": "cn", "Colombia": "co", "Cuba": "cu", "Czech Republic": "cz", "Egypt": "eg", "France": "fr", "Germany": "de",
+        "Greece": "gr", "Hong Kong": "hk", "Hungary": "hu", "India": "in", "Indonesia": "id", "Ireland": "ie", "Israel": "il",
+        "Italy": "it", "Japan": "jp", "Latvia": "lv", "Lithuania": "lt", "Malaysia": "my", "Mexico": "mx", "Morocco": "ma",
+        "Netherlands": "nl", "New Zealand": "nz", "Nigeria": "ng", "Norway": "no", "Philippines": "ph", "Poland": "pl",
+        "Portugal": "pt", "Romania": "ro", "Russia": "ru", "Saudi Arabia": "sa", "Serbia": "rs", "Singapore": "sg",
+        "Slovakia": "sk", "Slovenia": "si", "South Africa": "za", "South Korea": "kr", "Sweden": "se", "Switzerland": "ch",
+        "Taiwan": "tw", "Thailand": "th", "Turkey": "tr", "UAE": "ae", "Ukraine": "ua", "United Kingdom": "gb",
+        "United States": "us", "Venezuela": "ve"
+    };
+    return countryCodes[countryName];
+}
+
+function displayNews(articles) {
+    const newsContainer = document.getElementById('news-container');
+    newsContainer.innerHTML = '';
+    articles.forEach(article => {
+        const card = document.createElement('div');
+        card.className = 'news-card';
+        card.innerHTML = `
+            <div class="card-body">
+                <h5 class="card-title">${article.title}</h5>
+                <p class="card-text">${article.description}</p>
+            </div>
+            <hr>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Source: ${article.source.name}</li>
+                <li class="list-group-item">Author: ${article.author || 'Unknown'}</li>
+            </ul>
+            <div class="card-body">
+                <a href="${article.url}" class="card-link">Read more</a>
+            </div>
+        `;
+        newsContainer.appendChild(card);
+    });
+}
